@@ -22,8 +22,8 @@ export DESKTOP_SESSION=plasma
 echo "[*] Starting KDE Plasma desktop..."
 dbus-launch --exit-with-session /usr/bin/startplasma-x11 > /tmp/plasma.log 2>&1 &
 
-# Start websockify directly on 0.0.0.0:6080 bridging to 127.0.0.1:5901
-echo "[*] Starting websockify / noVNC web bridge on 0.0.0.0:6080..."
-nohup python3 -m websockify --web /opt/novnc 0.0.0.0:6080 127.0.0.1:5901 > /tmp/websockify.log 2>&1 &
+# Start websockify directly with exact optparse syntax
+echo "[*] Starting websockify / noVNC web bridge on port 6080..."
+nohup python3 -m websockify --web=/opt/novnc 6080 127.0.0.1:5901 > /tmp/websockify.log 2>&1 &
 
 echo "[✓] Fedora KDE Desktop is ready on port 6080!"
