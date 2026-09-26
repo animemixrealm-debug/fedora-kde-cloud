@@ -1,0 +1,15 @@
+{
+  "name": "Fedora KDE Cloud PC (4 Cores / 16GB)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "fedora",
+  "forwardPorts": [6080],
+  "portsAttributes": {
+    "6080": {
+      "label": "Fedora KDE Desktop",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "postStartCommand": "bash .devcontainer/start-desktop.sh"
+}
