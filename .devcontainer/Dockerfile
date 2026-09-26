@@ -2,7 +2,7 @@ FROM fedora:40
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install minimal KDE Plasma X11, TigerVNC, Firefox, and tools
+# Install minimal KDE Plasma X11, TigerVNC, OpenSSH, Firefox, and tools
 RUN dnf -y update && \
     dnf -y install \
       plasma-desktop \
@@ -13,6 +13,7 @@ RUN dnf -y update && \
       firefox \
       tigervnc-server \
       xorg-x11-server-Xvfb \
+      openssh-server \
       python3 \
       python3-pip \
       git \
@@ -26,6 +27,13 @@ RUN dnf -y update && \
       xauth \
       tar && \
     dnf clean all
+
+# Generate SSH host keys for GitHub Codespaces SSH support
+RUN ssh-keygen -A
+
+# Install cloudflared for direct zero-auth browser desktop access
+RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared && \
+    chmod +x /usr/local/bin/cloudflared
 
 # Install noVNC and websockify for in-browser desktop streaming
 RUN git clone --depth 1 https://github.com/novnc/noVNC.git /opt/novnc && \
@@ -48,4 +56,4 @@ RUN mkdir -p /home/fedora/.vnc && \
     echo "fedora123" | vncpasswd -f > /home/fedora/.vnc/passwd && \
     chmod 600 /home/fedora/.vnc/passwd
 
-EXPOSE 6080
+EXPOSE 6080 22
