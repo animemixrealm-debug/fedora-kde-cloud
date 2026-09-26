@@ -2,7 +2,7 @@ FROM fedora:40
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install minimal KDE Plasma X11, TigerVNC, OpenSSH, Firefox, and tools
+# Install minimal KDE Plasma X11, TigerVNC, Firefox, and tools
 RUN dnf -y update && \
     dnf -y install \
       plasma-desktop \
@@ -28,18 +28,16 @@ RUN dnf -y update && \
       tar && \
     dnf clean all
 
-# Generate SSH host keys for GitHub Codespaces SSH support
-RUN ssh-keygen -A
+# Pre-install websockify directly into Python so it runs instantly
+RUN pip3 install --no-cache-dir --break-system-packages websockify
 
-# Install cloudflared for direct zero-auth browser desktop access
-RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared && \
-    chmod +x /usr/local/bin/cloudflared
-
-# Install noVNC and websockify for in-browser desktop streaming
+# Install noVNC for in-browser desktop streaming
 RUN git clone --depth 1 https://github.com/novnc/noVNC.git /opt/novnc && \
-    git clone --depth 1 https://github.com/novnc/websockify.git /opt/novnc/utils/websockify && \
     ln -s /opt/novnc/vnc.html /opt/novnc/index.html && \
     chmod -R 755 /opt/novnc
+
+# Generate SSH host keys
+RUN ssh-keygen -A
 
 # Create user 'fedora' with passwordless sudo
 RUN useradd -m -s /bin/bash -u 1000 fedora && \
@@ -56,4 +54,4 @@ RUN mkdir -p /home/fedora/.vnc && \
     echo "fedora123" | vncpasswd -f > /home/fedora/.vnc/passwd && \
     chmod 600 /home/fedora/.vnc/passwd
 
-EXPOSE 6080 22
+EXPOSE 6080 5901
